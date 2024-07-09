@@ -1,0 +1,69 @@
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+model Client {
+  id String @id @default(uuid())
+  name String
+  lastName String
+  telephone String @unique
+  email String @unique
+  adress String
+  Colis Colis[]
+  WithDraw WithDraw[]
+}
+
+model Colis {
+  id String @id @default(uuid())
+  name String
+  description String
+  ClientId String @map("Client")
+  client Client @relation(fields: [ClientId], references: [id], onDelete: Cascade, onUpdate: Cascade)
+  programmeId String @map("Programme")
+  programVoyage ProgramVoyage @relation(fields: [programmeId], references: [id], onDelete: Cascade, onUpdate: Cascade)
+  WithDraw WithDraw[]
+}
+
+model ProgramVoyage {
+  id String @id @default(uuid())
+  designationId String @map("designation")
+  dateVoyage DateTime?
+  StartTrip String
+  Price Float
+  driverId String @map("driver")
+  driver Driver @relation(fields: [driverId],references: [id], onDelete: Cascade, onUpdate: Cascade)
+  destination Destination @relation(fields: [designationId], references: [id], onDelete: Cascade, onUpdate: Cascade)
+  Colis Colis[]
+}
+
+model Driver {
+  id String @id @default(uuid())
+  name String
+  lastName String
+  telephone String @unique
+  ProgramVoyage ProgramVoyage[]
+}
+
+model Destination {
+  id String @id @default(uuid())
+  nomVille String
+  adresse String
+  ProgramVoyage ProgramVoyage[]
+}
+
+model WithDraw {
+  id String @id @default(uuid())
+  clientId String @map("client")
+  colisId String @map("colis")
+  name String
+  email String
+  adresse String
+  client Client @relation(fields: [clientId], references: [id], onDelete: Cascade, onUpdate: Cascade)
+  colis Colis @relation(fields: [colisId], references: [id], onDelete: Cascade, onUpdate: Cascade)
+}
